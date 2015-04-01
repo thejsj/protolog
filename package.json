@@ -1,6 +1,6 @@
 {
-  "name": "protoLog",
-  "version": "1.0.0",
+  "name": "proto-log",
+  "version": "0.0.1",
   "description": "A global, better logger for Node and the browser",
   "main": "index.js",
   "scripts": {
@@ -12,6 +12,7 @@
   },
   "author": "thejsj",
   "license": "MIT",
+  "respository": "https://github.com/thejsj/proto-log.git",
   "dependencies": {
     "lodash": "^3.6.0"
   },

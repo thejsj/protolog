@@ -1,0 +1,71 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/bin/iojs',
+1 verbose cli   '/Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/bin/npm',
+1 verbose cli   'publish' ]
+2 info using npm@2.6.1
+3 info using node@v1.4.2
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec { raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/Users/jorgesilvajetter/Sites/2015/protolog',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /Users/jorgesilvajetter/.npm/protoLog/0.0.1/package.tgz not in flight; packing
+9 verbose tar pack [ '/Users/jorgesilvajetter/.npm/protoLog/0.0.1/package.tgz',
+9 verbose tar pack   '/Users/jorgesilvajetter/Sites/2015/protolog' ]
+10 verbose tarball /Users/jorgesilvajetter/.npm/protoLog/0.0.1/package.tgz
+11 verbose folder /Users/jorgesilvajetter/Sites/2015/protolog
+12 info prepublish protoLog@0.0.1
+13 verbose addLocalTarball adding from inside cache /Users/jorgesilvajetter/.npm/protoLog/0.0.1/package.tgz
+14 silly cache afterAdd protoLog@0.0.1
+15 verbose afterAdd /Users/jorgesilvajetter/.npm/protoLog/0.0.1/package/package.json not in flight; writing
+16 verbose afterAdd /Users/jorgesilvajetter/.npm/protoLog/0.0.1/package/package.json written
+17 silly publish { name: 'protoLog',
+17 silly publish   version: '0.0.1',
+17 silly publish   description: 'A global, better logger for Node and the browser',
+17 silly publish   main: 'index.js',
+17 silly publish   scripts:
+17 silly publish    { test: 'echo "Error: no test specified" && exit 1',
+17 silly publish      build: 'npm run browserify && npm run uglify',
+17 silly publish      browserify: './node_modules/browserify/bin/cmd.js -e index.js --standalone protoLog -o dist/proto-log.js',
+17 silly publish      uglify: './node_modules/uglify-js/bin/uglifyjs dist/proto-log.js -o dist/proto-log.min.js -c -m' },
+17 silly publish   author: { name: 'thejsj' },
+17 silly publish   license: 'MIT',
+17 silly publish   respository: 'https://github.com/thejsj/proto-log.git',
+17 silly publish   dependencies: { lodash: '^3.6.0' },
+17 silly publish   devDependencies: { browserify: '^9.0.4', mocha: '^2.2.1', 'uglify-js': '^2.4.19' },
+17 silly publish   readme: '# Protolog\n\nProtolog as a global `.log` method to all variables in JavaScript. It basically [monkeypatches]() `console.log` into the `Object` prototype. The idea is to add a simple shorcut to logging by making all variables loggable, like this:\n\n```javascript\n\'a\'.log()\n```\n![Protolog In the Browser]()\n\nThe `.log` method returns the object itself. In this way, you can plug `.log` statements anywhere in your code without it interfering with the flow of your code.\n\n```javascript\nvar a = 5;\n\n5 === a.log() // true\na.log() === a // true\n```\n\n![Showing equality in the browser]()\n\n```javascript\nif (a === 5) {\n  doSomething();\n}\n```\nIs the same as:\n```javascript\nif (a.log() === 5) {\n  doSomething();\n}\n```\n\nAlternatively, you can just require the module and use it as a replacement for `console.log`:\n\n```javascript\nvar log = require(\'protolog/local\')();\n\nlog(\'hello\');\n```\n\n## Install\n\nIf in node, use npm:\n```\nnpm install protolog\n```\n\nIf in the browser, use bower or the CDN:\n```\nbower install protolog\n```\n\n## Options\n\n1. `name` (`String`) [default: `log`]\n\nChange the name of the the method to be used for logging. This will be the name of the property to be appended to the `Object` prototype.\n\n2. `appendToPrototype` (`Boolean`) [default: true]\n\nSpecify wether the `.log` method will be appended to the `Object` prototype and hence be available in all variables. If `false`, you can require this function and then use the library as a normal function. This will be useful once the library has unique methods that enhance logging.\n\n## Is This A Terrible Idea?\n\nPerhaps. But, thankfully, you don\'t have to use it :).\n\nMonkey-patching is definitely questionable, but the behavior provided by this library is both: very useful and universal. The `.log` method is nothing more than a thin wrapper over `console.log`. The method also implemented responsibly, taking inspiration with [should.js\'s]() implementation.\n\n## The Future\n\nIn the future, this library will include other features for logging in the console/REPL. The two main features included will be transformations: transforming the data you want to log, and display methods: changing the way in which the data is displayed.\n',
+17 silly publish   readmeFilename: 'README.md',
+17 silly publish   gitHead: '0036b9881b0c27cc4359c565cbeca56c57b059bf',
+17 silly publish   _id: 'protoLog@0.0.1',
+17 silly publish   _shasum: 'a046d0ee2cba3a352009c8c7e0a2787bd63cfd64',
+17 silly publish   _from: '.' }
+18 silly mapToRegistry name protoLog
+19 silly mapToRegistry using default registry
+20 silly mapToRegistry registry https://registry.npmjs.org/
+21 silly mapToRegistry uri https://registry.npmjs.org/protoLog
+22 verbose publish registryBase https://registry.npmjs.org/
+23 silly publish uploading /Users/jorgesilvajetter/.npm/protoLog/0.0.1/package.tgz
+24 verbose stack Error: Invalid name: "protoLog"
+24 verbose stack     at ensureValidName (/Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/lib/node_modules/npm/node_modules/normalize-package-data/lib/fixer.js:322:15)
+24 verbose stack     at Object.module.exports.fixNameField (/Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/lib/node_modules/npm/node_modules/normalize-package-data/lib/fixer.js:211:5)
+24 verbose stack     at CachingRegistryClient.publish (/Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/lib/node_modules/npm/node_modules/npm-registry-client/lib/publish.js:41:11)
+24 verbose stack     at /Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/lib/node_modules/npm/lib/publish.js:135:14
+24 verbose stack     at mapToRegistry (/Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/lib/node_modules/npm/lib/utils/map-to-registry.js:55:3)
+24 verbose stack     at publish_ (/Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/lib/node_modules/npm/lib/publish.js:105:3)
+24 verbose stack     at Array.<anonymous> (/Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/lib/node_modules/npm/node_modules/slide/lib/bind-actor.js:15:8)
+24 verbose stack     at LOOP (/Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/lib/node_modules/npm/node_modules/slide/lib/chain.js:15:14)
+24 verbose stack     at LOOP (/Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/lib/node_modules/npm/node_modules/slide/lib/chain.js:14:28)
+24 verbose stack     at chain (/Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/lib/node_modules/npm/node_modules/slide/lib/chain.js:20:5)
+25 verbose cwd /Users/jorgesilvajetter/Sites/2015/protolog
+26 error Darwin 14.1.0
+27 error argv "/Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/bin/iojs" "/Users/jorgesilvajetter/.nvm/versions/io.js/v1.4.2/bin/npm" "publish"
+28 error node v1.4.2
+29 error npm  v2.6.1
+30 error Invalid name: "protoLog"
+31 error If you need help, you may report this error at:
+31 error     <http://github.com/npm/npm/issues>
+32 verbose exit [ 1, true ]
