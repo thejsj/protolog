@@ -1,0 +1,18 @@
+{
+  "name": "protoLog",
+  "version": "1.0.0",
+  "description": "A global, better logger for Node and the browser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./node_modules/lodash/bin/lodash include=each"
+  },
+  "author": "thejsj",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^3.6.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.1"
+  }
+}
