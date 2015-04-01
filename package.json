@@ -5,10 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./node_modules/lodash/bin/lodash include=each",
+    "build": "npm run browserify && npm run uglify",
     "browserify": "./node_modules/browserify/bin/cmd.js -e index.js --standalone protoLog -o dist/protolog.js",
-    "uglify": "./node_modules/uglify-js/bin/uglifyjs dist/protolog.js -o dist/protolog.min.js -c -m",
-    "build": "npm run browserify && npm run uglify"
+    "uglify": "./node_modules/uglify-js/bin/uglifyjs dist/protolog.js -o dist/protolog.min.js -c -m"
   },
   "author": "thejsj",
   "license": "MIT",
