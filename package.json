@@ -1,18 +1,18 @@
 {
-  "name": "proto-log",
+  "name": "protolog",
   "version": "0.0.1",
   "description": "A global, enhanced logger for Node and the browser",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "./node_modules/lodash/bin/lodash include=each",
-    "browserify": "./node_modules/browserify/bin/cmd.js -e index.js --standalone protoLog -o dist/proto-log.js",
-    "uglify": "./node_modules/uglify-js/bin/uglifyjs dist/proto-log.js -o dist/proto-log.min.js -c -m",
+    "browserify": "./node_modules/browserify/bin/cmd.js -e index.js --standalone protoLog -o dist/protolog.js",
+    "uglify": "./node_modules/uglify-js/bin/uglifyjs dist/protolog.js -o dist/protolog.min.js -c -m",
     "build": "npm run browserify && npm run uglify"
   },
   "author": "thejsj",
   "license": "MIT",
-  "respository": "https://github.com/thejsj/proto-log.git",
+  "respository": "https://github.com/thejsj/protolog.git",
   "dependencies": {
     "lodash": "^3.6.0"
   },
