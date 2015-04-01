@@ -52,11 +52,15 @@ bower install protolog
 
 ## Options
 
-1. `name` (`String`) [default: `log`]
+| name | type | default |
+|--------|----------|---------|
+| `name` | `String` | `'true'` |
 
 Change the name of the the method to be used for logging. This will be the name of the property to be appended to the `Object` prototype.
 
-2. `appendToPrototype` (`Boolean`) [default: true]
+| name | type | default |
+|---------------------|-----------|---------|
+| `appendToPrototype` | `Boolean` | `true` |
 
 Specify wether the `.log` method will be appended to the `Object` prototype and hence be available in all variables. If `false`, you can require this function and then use the library as a normal function. This will be useful once the library has unique methods that enhance logging.
 
