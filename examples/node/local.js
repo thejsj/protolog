@@ -1,17 +1,18 @@
-var l = require('protolog');
+var l = require('../local')();
 
-// Log strings
+
+// Log numbers
 var str = 'hello';
-str.log();
+l(str);
 
 // Log objects
 var obj = { 'a': 'a', b: 'b' };
-obj.log();
+l(obj);
 
-// Log arrays
+// Log array
 var arr = [1,2,3,4,5];
-arr.log();
+l(arr);
 
-// Log numbers
+// Log number
 var number = 3453453.23423;
-number.log();
+l(number);
