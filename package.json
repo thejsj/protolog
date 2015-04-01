@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "./node_modules/lodash/bin/lodash include=each",
-    "browserify": "./node_modules/browserify/bin/cmd.js -e index.js -o dist/proto-log.js",
+    "browserify": "./node_modules/browserify/bin/cmd.js -e index.js --standalone protoLog -o dist/proto-log.js",
     "uglify": "./node_modules/uglify-js/bin/uglifyjs dist/proto-log.js -o dist/proto-log.min.js -c -m",
     "build": "npm run browserify && npm run uglify"
   },
