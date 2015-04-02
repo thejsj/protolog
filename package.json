@@ -1,6 +1,6 @@
 {
   "name": "protolog",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A global, enhanced logger for Node and the browser",
   "main": "index.js",
   "scripts": {
