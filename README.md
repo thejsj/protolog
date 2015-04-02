@@ -54,7 +54,7 @@ bower install protolog
 
 | name | type | default |
 |--------|----------|---------|
-| `name` | `String` | `'true'` |
+| `name` | `String` | `'log'` |
 
 Change the name of the the method to be used for logging. This will be the name of the property to be appended to the `Object` prototype.
 
