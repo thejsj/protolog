@@ -1,0 +1,24 @@
+{
+  "name": "protolog",
+  "main": "index.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/thejsj/protolog",
+  "authors": [
+    "thejsj <jorge.silva@thejsj.com>"
+  ],
+  "description": "A global, enhanced logger for Node and the browser",
+  "keywords": [
+    "log",
+    "console",
+    "display",
+    "prototype"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
