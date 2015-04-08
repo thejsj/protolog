@@ -1,5 +1,4 @@
-var l = require('../local')();
-
+var l = require('../../local')();
 
 // Log numbers
 var str = 'hello';

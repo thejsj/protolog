@@ -1,4 +1,4 @@
-var l = require('../')();
+var l = require('../../')();
 
 // Log strings
 var str = 'hello';
