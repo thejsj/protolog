@@ -14,8 +14,8 @@ var protoLogWrapper = function (opts) {
    */
   opts = _defaults(opts || {}, {
     propertyName: 'log',
-    appendToPrototype: true
-  });
+    appendToPrototype: true, // true
+ });
 
   /**
    * Append a property to the Object prototype
@@ -24,13 +24,10 @@ var protoLogWrapper = function (opts) {
    */
   var extend = function(propertyName, proto) {
     var prevDescriptor = Object.getOwnPropertyDescriptor(proto, propertyName);
-
     Object.defineProperty(proto, propertyName, {
-      set: function() { },
-      get: function() {
-        return function () {
-          return protoLog(opts)(this);
-        };
+      set: function () { },
+      get: function () {
+        return protoLog(opts, this);
       },
       configurable: true
     });
@@ -52,14 +49,32 @@ var bind = require('lodash/function/bind');
 
 var log = bind(console.log, console);
 
-var protoLog = function (opts) {
-  return function (obj) {
-    log(obj.valueOf());
-    return obj;
-  };
-};
+module.exports = function (opts, self) {
 
-module.exports = protoLog;
+    var self = (self === undefined) ? false : self;
+
+    var protoLog = function (obj) {
+      log((self || obj).valueOf());
+      return (self || obj).valueOf();
+    };
+
+    protoLog.color = function (obj, color) {
+      log('color(', color, obj.valueOf(), '):', (self || obj).valueOf());
+      return (self || obj);
+    };
+
+    /*!
+     * Bind every function to self, if self has been provided.
+     * This is ugly and should be fixed
+     */
+    if (self) {
+      for (var i in protoLog) {
+        protoLog[i] = bind(protoLog[i], null, self);
+      }
+    }
+
+    return protoLog;
+};
 
 },{"lodash/function/bind":6}],4:[function(require,module,exports){
 var LazyWrapper = require('../internal/LazyWrapper'),

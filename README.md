@@ -5,7 +5,7 @@ Protolog as a global `.log` method to all variables in JavaScript. It basically 
 ```javascript
 'a'.log()
 ```
-![Protolog In the Browser]()
+![Protolog In the Browser](screenshots/browser-1.png)
 
 The `.log` method returns the object itself. In this way, you can plug `.log` statements anywhere in your code without it interfering with the flow of your code.
 
@@ -16,7 +16,7 @@ var a = 5;
 a.log() === a // true
 ```
 
-![Showing equality in the browser]()
+![Showing equality in the browser](screenshots/browser-2.png)
 
 ```javascript
 if (a === 5) {
