@@ -5,7 +5,6 @@ var str = 'hello';
 str.log('red');
 l('hello world');
 l.color('hello world!!!', 'red');
-console.log(Object.keys(str.log));
 str.log.color('red');
 
 // Log objects
