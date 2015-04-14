@@ -4,18 +4,20 @@
   "description": "A global, enhanced logger for Node and the browser",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/mocha/bin/mocha ./test",
     "build": "npm run browserify && npm run uglify",
     "browserify": "./node_modules/browserify/bin/cmd.js -e index.js --standalone protoLog -o dist/protolog.js",
     "uglify": "./node_modules/uglify-js/bin/uglifyjs dist/protolog.js -o dist/protolog.min.js -c -m"
   },
   "npmName": "protolog",
-  "npmFileMap": [{
-    "basePath": "/dist/",
-    "files": [
-      "*.js"
-    ]
-  }], 
+  "npmFileMap": [
+    {
+      "basePath": "/dist/",
+      "files": [
+        "*.js"
+      ]
+    }
+  ],
   "author": "thejsj",
   "license": "MIT",
   "respository": "https://github.com/thejsj/protolog.git",
@@ -24,7 +26,8 @@
   },
   "devDependencies": {
     "browserify": "^9.0.4",
-    "mocha": "^2.2.1",
+    "mocha": "^2.2.4",
+    "should": "^5.2.0",
     "uglify-js": "^2.4.19"
   }
 }
