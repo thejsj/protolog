@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "browserify": "^9.0.4",
+    "chai": "^2.2.0",
     "mocha": "^2.2.4",
     "should": "^5.2.0",
     "uglify-js": "^2.4.19"
