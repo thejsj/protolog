@@ -61,5 +61,14 @@ describe('Global Prototype Function', function () {
     consoleStub.getLastLog().should.not.equal('hello');
   });
 
+});
 
+describe('Colors', function () {
+
+  it('should display the color red correcltly', function () {
+    l.color('wow', 'red');
+    consoleStub.getLastLog().should.equal([ '\u001b[31m', 'wow', '\u001b[0m' ].join(''));
+    l.color('goowdbye', 'red');
+    consoleStub.getLastLog().should.equal([ '\u001b[31m', 'goowdbye', '\u001b[0m' ].join(''));
+  });
 });
