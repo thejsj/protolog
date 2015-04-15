@@ -37,6 +37,42 @@ var log = require('protolog/local')();
 
 log('hello');
 ```
+You can style your logs using the `color`, `bold`, `underline`, and `background`.
+```javascript
+“hello”.color(‘green’);
+
+{a: ‘b’}.bold(‘blue’);
+
+5.underline(); // defaults to black
+
+[1, 2, 3].background(‘red’);
+```
+
+Available colors are:
+```
+| color| 
+|--------|
+| Black|
+|--------|
+| Red|
+|--------|
+| Green|
+|--------|
+| Yellow|
+|--------|
+| Blue|
+|--------|
+| Purple|
+|--------|
+| Cyan|
+|--------|
+| Pink|
+|--------|
+| Grey|
+|--------|
+| White|
+|--------|
+```
 
 ## Install
 
