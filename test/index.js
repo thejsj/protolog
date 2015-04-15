@@ -119,8 +119,24 @@ desribe('table', function () {
        '| 2 | 7   | goodbye | 9 |',
        '+---+-----+---------+---+'
       ]);
-
   });
+
+  it('shoud display a two dimensional array with a row for every child array, displaying all further arrays in a single cell', function () {
+    l.table([[1, 'hello', 3], ['wow', 5, 6], [7,'goodbye', [1, 2] ]]);
+    consoleStub.getLastLog().split('\n').should.eql(
+      [
+       '+---+-----+---------+--------+',
+       '|   | 0   | 1       | 2      |',
+       '+---+-----+---------+--------+'
+       '| 0 | 1   | hello   | 3      |',
+       '+---+-----+---------+--------+'
+       '| 1 | wow | 5       | 6      |',
+       '+---+-----+---------+--------+'
+       '| 2 | 7   | goodbye | [1, 2] |',
+       '+---+-----+---------+--------+'
+      ]);
+  });
+
   // Array of objects
 
 });
