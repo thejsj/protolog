@@ -72,3 +72,55 @@ describe('Colors', function () {
     consoleStub.getLastLog().should.equal([ '\u001b[31m', 'goowdbye', '\u001b[0m' ].join(''));
   });
 });
+
+desribe('table', function () {
+
+  it('should display a string, a number of a boolean as a single cell', function () {
+    l.table('hello');
+    consoleStub.getLastLog().split('\n').should.eql(['+-------+', '| hello |', '+-------+']);
+    l.table('2');
+    consoleStub.getLastLog().split('\n').should.eql(['+---+', '| 2 |', '+---+']);
+    l.table(true);
+    consoleStub.getLastLog().split('\n').should.eql(['+------+', '| true |', '+------+']);
+  });
+
+  it('should display null or undefined as a single cell', function () {
+    l.table(null);
+    consoleStub.getLastLog().split('\n').should.eql(['+------+', '| null |', '+------+']);
+    l.table(undefined);
+    consoleStub.getLastLog().split('\n').should.eql(['+-----------+', '| undefined |', '+-----------+']);
+  });
+
+  // One dimensional arrays
+  it('should display single level arrays as a single row, width the indexes as the table header', function () {
+    l.table(['hello', 'goodbye', 'wow']);
+    consoleStub.getLastLog().split('\n').should.eql(
+      [
+       '+-------+---------+-----+',
+       '| 0     | 1       | 2   |',
+       '+-------+---------+-----+'
+       '| hello | goodbye | wow |',
+       '+-------+---------+-----+'
+      ]);
+  });
+
+  // Array of arrays
+  it('shoud display a two dimensional array with a row for every child array', function () {
+    l.table([[1, 'hello', 3], ['wow', 5, 6], [7,'goodbye', 9]]);
+    consoleStub.getLastLog().split('\n').should.eql(
+      [
+       '+---+-----+---------+---+',
+       '|   | 0   | 1       | 2 |',
+       '+---+-----+---------+---+'
+       '| 0 | 1   | hello   | 3 |',
+       '+---+-----+---------+---+'
+       '| 1 | wow | 5       | 6 |',
+       '+---+-----+---------+---+'
+       '| 2 | 7   | goodbye | 9 |',
+       '+---+-----+---------+---+'
+      ]);
+
+  });
+  // Array of objects
+
+});
