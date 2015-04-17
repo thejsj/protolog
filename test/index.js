@@ -73,7 +73,7 @@ describe('Colors', function () {
   });
 });
 
-desribe('table', function () {
+describe('table', function () {
 
   it('should display a string, a number of a boolean as a single cell', function () {
     l.table('hello');
@@ -96,11 +96,13 @@ desribe('table', function () {
     l.table(['hello', 'goodbye', 'wow']);
     consoleStub.getLastLog().split('\n').should.eql(
       [
-       '+-------+---------+-----+',
-       '| 0     | 1       | 2   |',
-       '+-------+---------+-----+'
-       '| hello | goodbye | wow |',
-       '+-------+---------+-----+'
+       '+---+---------+',
+       '| 0 | hello   |',
+       '+---+---------+',
+       '| 1 | goodbye |',
+       '+---+---------+',
+       '| 2 | wow     |',
+       '+---+---------+',
       ]);
   });
 
@@ -111,13 +113,13 @@ desribe('table', function () {
       [
        '+---+-----+---------+---+',
        '|   | 0   | 1       | 2 |',
-       '+---+-----+---------+---+'
+       '+---+-----+---------+---+',
        '| 0 | 1   | hello   | 3 |',
-       '+---+-----+---------+---+'
+       '+---+-----+---------+---+',
        '| 1 | wow | 5       | 6 |',
-       '+---+-----+---------+---+'
+       '+---+-----+---------+---+',
        '| 2 | 7   | goodbye | 9 |',
-       '+---+-----+---------+---+'
+       '+---+-----+---------+---+',
       ]);
   });
 
@@ -127,16 +129,46 @@ desribe('table', function () {
       [
        '+---+-----+---------+--------+',
        '|   | 0   | 1       | 2      |',
-       '+---+-----+---------+--------+'
+       '+---+-----+---------+--------+',
        '| 0 | 1   | hello   | 3      |',
-       '+---+-----+---------+--------+'
+       '+---+-----+---------+--------+',
        '| 1 | wow | 5       | 6      |',
-       '+---+-----+---------+--------+'
+       '+---+-----+---------+--------+',
        '| 2 | 7   | goodbye | [1, 2] |',
        '+---+-----+---------+--------+'
       ]);
   });
 
+  it('shoud display a two dimensional array with a row for every child array, displaying all further arrays in a single cell', function () {
+    l.table([[1, 2], [4, 5, 6], [7]]);
+    consoleStub.getLastLog().split('\n').should.eql(
+      [
+       '+---+---+---+---+',
+       '|   | 0 | 1 | 2 |',
+       '+---+---+---+---+',
+       '| 0 | 1 | 2 |   |',
+       '+---+---+---+---+',
+       '| 1 | 4 | 5 | 6 |',
+       '+---+---+---+---+',
+       '| 2 | 7 |   |   |',
+       '+---+---+---+---+'
+      ]);
+  });
+
+  // Array with multilpe types
+  it('shoud display a two dimensional array with a row for every child array, only if all values are arrays', function () {
+    l.table([[1, 'hello', 3], ['wow', 5, 6], null]);
+    consoleStub.getLastLog().split('\n').should.eql(
+      [
+       '+---+-----------------+',
+       '| 0 | [1, "hello", 3] |',
+       '+---+-----+-----------+',
+       '| 1 | ["wow", 5, 6]   |',
+       '+---+-----------------+',
+       '| 2 | null            |',
+       '+---+-----------------+',
+      ]);
+  });
   // Array of objects
 
 });
