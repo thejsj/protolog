@@ -77,18 +77,38 @@ describe('table', function () {
 
   it('should display a string, a number of a boolean as a single cell', function () {
     l.table('hello');
-    consoleStub.getLastLog().split('\n').should.eql(['+-------+', '| hello |', '+-------+']);
+    consoleStub.getLastLog().split('\n').should.eql([
+      '+-------+',
+      '| hello |',
+      '+-------+'
+    ]);
     l.table('2');
-    consoleStub.getLastLog().split('\n').should.eql(['+---+', '| 2 |', '+---+']);
+    consoleStub.getLastLog().split('\n').should.eql([
+      '+---+',
+      '| 2 |',
+      '+---+'
+    ]);
     l.table(true);
-    consoleStub.getLastLog().split('\n').should.eql(['+------+', '| true |', '+------+']);
+    consoleStub.getLastLog().split('\n').should.eql([
+      '+------+',
+      '| true |',
+      '+------+'
+    ]);
   });
 
   it('should display null or undefined as a single cell', function () {
     l.table(null);
-    consoleStub.getLastLog().split('\n').should.eql(['+------+', '| null |', '+------+']);
+    consoleStub.getLastLog().split('\n').should.eql([
+      '+------+',
+      '| null |',
+      '+------+'
+    ]);
     l.table(undefined);
-    consoleStub.getLastLog().split('\n').should.eql(['+-----------+', '| undefined |', '+-----------+']);
+    consoleStub.getLastLog().split('\n').should.eql([
+      '+-----------+',
+      '| undefined |',
+      '+-----------+'
+    ]);
   });
 
   // One dimensional arrays
@@ -127,15 +147,15 @@ describe('table', function () {
     l.table([[1, 'hello', 3], ['wow', 5, 6], [7,'goodbye', [1, 2] ]]);
     consoleStub.getLastLog().split('\n').should.eql(
       [
-       '+---+-----+---------+--------+',
-       '|   | 0   | 1       | 2      |',
-       '+---+-----+---------+--------+',
-       '| 0 | 1   | hello   | 3      |',
-       '+---+-----+---------+--------+',
-       '| 1 | wow | 5       | 6      |',
-       '+---+-----+---------+--------+',
-       '| 2 | 7   | goodbye | [1, 2] |',
-       '+---+-----+---------+--------+'
+       '+---+-----+---------+-----+',
+       '|   | 0   | 1       | 2   |',
+       '+---+-----+---------+-----+',
+       '| 0 | 1   | hello   | 3   |',
+       '+---+-----+---------+-----+',
+       '| 1 | wow | 5       | 6   |',
+       '+---+-----+---------+-----+',
+       '| 2 | 7   | goodbye | 1,2 |', // Perhaps it would be better if it was [1, 2]
+       '+---+-----+---------+-----+'
       ]);
   });
 
@@ -169,6 +189,7 @@ describe('table', function () {
        '+---+-----------------+',
       ]);
   });
+
   // Array of objects
 
 });
