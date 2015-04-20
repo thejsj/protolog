@@ -66,9 +66,9 @@ describe('Global Prototype Function', function () {
 describe('Colors', function () {
 
   it('should display the color red correcltly', function () {
-    l.color('wow', 'red');
+    l.color('wow', 'red').log();
     consoleStub.getLastLog().should.equal([ '\u001b[31m', 'wow', '\u001b[0m' ].join(''));
-    l.color('goowdbye', 'red');
+    l.color('goowdbye', 'red').log();
     consoleStub.getLastLog().should.equal([ '\u001b[31m', 'goowdbye', '\u001b[0m' ].join(''));
   });
 });
@@ -76,19 +76,19 @@ describe('Colors', function () {
 describe('table', function () {
 
   it('should display a string, a number of a boolean as a single cell', function () {
-    l.table('hello');
+    l.table('hello').log();
     consoleStub.getLastLog().split('\n').should.eql([
       '+-------+',
       '| hello |',
       '+-------+'
     ]);
-    l.table('2');
+    l.table('2').log();
     consoleStub.getLastLog().split('\n').should.eql([
       '+---+',
       '| 2 |',
       '+---+'
     ]);
-    l.table(true);
+    l.table(true).log();
     consoleStub.getLastLog().split('\n').should.eql([
       '+------+',
       '| true |',
@@ -97,13 +97,13 @@ describe('table', function () {
   });
 
   it('should display null or undefined as a single cell', function () {
-    l.table(null);
+    l.table(null).log();
     consoleStub.getLastLog().split('\n').should.eql([
       '+------+',
       '| null |',
       '+------+'
     ]);
-    l.table(undefined);
+    l.table(undefined).log();
     consoleStub.getLastLog().split('\n').should.eql([
       '+-----------+',
       '| undefined |',
@@ -113,7 +113,7 @@ describe('table', function () {
 
   // One dimensional arrays
   it('should display single level arrays as a single row, width the indexes as the table header', function () {
-    l.table(['hello', 'goodbye', 'wow']);
+    l.table(['hello', 'goodbye', 'wow']).log();
     consoleStub.getLastLog().split('\n').should.eql(
       [
        '+---+---------+',
@@ -128,7 +128,7 @@ describe('table', function () {
 
   // Array of arrays
   it('shoud display a two dimensional array with a row for every child array', function () {
-    l.table([[1, 'hello', 3], ['wow', 5, 6], [7,'goodbye', 9]]);
+    l.table([[1, 'hello', 3], ['wow', 5, 6], [7,'goodbye', 9]]).log();
     consoleStub.getLastLog().split('\n').should.eql(
       [
        '+---+-----+---------+---+',
@@ -144,7 +144,7 @@ describe('table', function () {
   });
 
   it('shoud display a two dimensional array with a row for every child array, displaying all further arrays in a single cell', function () {
-    l.table([[1, 'hello', 3], ['wow', 5, 6], [7,'goodbye', [1, 2] ]]);
+    l.table([[1, 'hello', 3], ['wow', 5, 6], [7,'goodbye', [1, 2] ]]).log();
     consoleStub.getLastLog().split('\n').should.eql(
       [
        '+---+-----+---------+-----+',
@@ -160,7 +160,7 @@ describe('table', function () {
   });
 
   it('shoud display a two dimensional array with a row for every child array, displaying all further arrays in a single cell', function () {
-    l.table([[1, 2], [4, 5, 6], [7]]);
+    l.table([[1, 2], [4, 5, 6], [7]]).log();
     consoleStub.getLastLog().split('\n').should.eql(
       [
        '+---+---+---+---+',
@@ -177,7 +177,7 @@ describe('table', function () {
 
   // Array with multilpe types
   it('shoud display a two dimensional array with a row for every child array, only if all values are arrays', function () {
-    l.table([[1, 'hello', 3], ['wow', 5, 6], null]);
+    l.table([[1, 'hello', 3], ['wow', 5, 6], null]).log();
     consoleStub.getLastLog().split('\n').should.eql(
       [
        '+---+-----------+',
@@ -191,5 +191,13 @@ describe('table', function () {
   });
 
   // Array of objects
+
+});
+
+describe('Method Chaining', function () {
+
+});
+
+describe('Method Chaining without the global prototype', function () {
 
 });
