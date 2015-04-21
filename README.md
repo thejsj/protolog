@@ -1,5 +1,7 @@
 # Protolog
 
+[![NPM](https://nodei.co/npm/protolog.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/protolog/)
+
 - [Introduction](#introduction)
 - [Install](#install)
 - [Options](#options)
@@ -19,7 +21,7 @@ Protolog as a global `.log` method to all variables in JavaScript. It basically 
 ```javascript
 'a'.log()
 ```
-![Protolog In the Browser](screenshots/browser-1.png)
+![Protolog In the Browser](https://raw.githubusercontent.com/thejsj/protolog/master/screenshots/browser-1.png)
 
 The `.log` method returns the object itself. In this way, you can plug `.log` statements anywhere in your code without it interfering with the flow of your code.
 
@@ -30,7 +32,7 @@ var a = 5;
 a.log() === a // true
 ```
 
-![Showing equality in the browser](screenshots/browser-2.png)
+![Showing equality in the browser](https://raw.githubusercontent.com/thejsj/protolog/master/screenshots/browser-1.png)
 
 ```javascript
 if (a === 5) {
