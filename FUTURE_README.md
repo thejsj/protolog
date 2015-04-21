@@ -73,11 +73,25 @@ Function Execution Time: 1ms
 ```
 
 Methods:
+- color // Any
+- underline // Any
+- background // Any
+- bold // any
 - table // Arrays, Objects
 - time // Functions
 - prettify // Arrays, Objects
 - info / data / type // Any
 - json // Any
+
+### Chaining 
+
+Order shouldn’t matter. Every method should only do one thing, so that the result of a method is easily predictable.
+
+l.color(‘hello’, ‘green).bold().underline(); // green, bold and underline
+l.bold(‘hello’).color(‘green’).underline(); // green, bold and underline
+l.underline(‘hello’).underline().color(‘green’); // green, bold and underline
+
+Styling methods should be applied at the end. This simplifies the functionality of the method, and also makes it possible to be compatible with the browser. In the browser, styling can only be applied at the end of a `console.log`.
 
 ## Transformations
 

@@ -196,6 +196,13 @@ describe('table', function () {
 
 describe('Method Chaining', function () {
 
+  it('should be able to add a color and a background', function () {
+    var a = l.color('wow', 'green');
+    console.log(a.constructor.toString());
+    console.log(typeof a.background);
+    a.log();
+    consoleStub.getLastLog().should.equal([ '\033[41m\033[30mm', 'wow', '\u001b[0m' ].join(''));
+  });
 });
 
 describe('Method Chaining without the global prototype', function () {

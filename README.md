@@ -88,14 +88,12 @@ Specify wether the `.log` method will be appended to the `Object` prototype and 
 | [`background`](#method-background) |
 | [`table`](#method-table) |
 
-Note: At the moment, these methods are not chainable so only one of them can be called. This feature will be implemented soon.
-
 ### `color(colorName <String>)` <a name='method-color'></a>
 
 Change the text color of your logs using one of the [available colors](#colors).
 
 ```javascript
-“hello”.color(‘green’);
+“hello”.color(‘green’).log();
 ```
 
 | name | type | default |
@@ -109,7 +107,7 @@ Change the text color of your logs using one of the [available colors](#colors).
 Make the text bold and change the text color of your logs and using one of the [available colors](#colors).
 
 ```javascript
-“hello”.bold(‘green’);
+“hello”.bold(‘green’).log();
 ```
 
 | name | type | default |
@@ -123,7 +121,7 @@ Make the text bold and change the text color of your logs and using one of the [
 Underline the text bold and change the text color using one of the [available colors](#colors).
 
 ```javascript
-“hello”.underline(‘green’);
+“hello”.underline(‘green’).log();
 ```
 
 | name | type | default |
@@ -137,7 +135,7 @@ Underline the text bold and change the text color using one of the [available co
 Change the background color of your logs using one of the [available colors](#colors).
 
 ```javascript
-“hello”.background(red);
+“hello”.background(red).log();
 ```
 
 | name | type | default |
@@ -153,7 +151,7 @@ Display the values of a variable as a table.
 Strings, numbers, booleans, null and undefined get displayed as a single column in a single row:
 
 ```javascript
-“hello”.table();
+“hello”.table().log();
 ```
 
 Displays:
@@ -167,7 +165,7 @@ Displays:
 Arrays of a single dimension get displayed as a table with multiple rows with two columns: an index and a value.
 
 ```javascript
-['hello', 'goodbye', 'wow'].table();
+['hello', 'goodbye', 'wow'].table().log();
 ```
 
 Displays:
@@ -185,7 +183,7 @@ Displays:
 Arrays of two dimensions (where all values inside the arrays are also arrays) get displayed as a table with multiple rows and multiple columns. The first column is the index of the first dimension and the first row is the index for the second dimension.
 
 ```javascript
-[[1, 2], [4, 5, 6], [7]].table();
+[[1, 2], [4, 5, 6], [7]].table().log();
 ```
 
 Displays:
