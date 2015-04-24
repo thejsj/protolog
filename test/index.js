@@ -196,12 +196,57 @@ describe('table', function () {
 
 describe('Method Chaining', function () {
 
-  it('should be able to add a color and a background', function () {
-    l.color('wow', 'green').background('green').log();
-    consoleStub.getLastLog().should.equal([ '\033[41m\033[30mm', 'wow', '\u001b[0m' ].join(''));
+  it('should be able to add a color and bold', function () {
+    l.color('wow', 'green').bold().log();
+    consoleStub.getLastLog().should.equal([ '\033[1;32m', 'wow', '\u001b[0m' ].join(''));
+    l.bold('wow').color('green').log();
+    consoleStub.getLastLog().should.equal([ '\033[1;32m', 'wow', '\u001b[0m' ].join(''));
+  });
+
+  it('should be able to add a color, underline and bold', function () {
+    l.color('wow', 'green').bold().underline().log();
+    consoleStub.getLastLog().should.equal([ '\033[4;1;32m', 'wow', '\u001b[0m' ].join(''));
+    l.underline('wow').color('green').bold().log();
+    consoleStub.getLastLog().should.equal([ '\033[4;1;32m', 'wow', '\u001b[0m' ].join(''));
+  });
+
+  // TODO: Add tests for background AND color chained together
+  // I don't know if backgrounds work at all or if they heed to two separted statements
+
+  it('should display a table in the specified color, if set that way', function () {
+    l.table('hello').color('green').log();
+    consoleStub.getLastLog().split('\n').should.eql([
+      '\033[32m+-------+',
+              '| hello |',
+              '+-------+\u001b[0m'
+    ]);
+  });
+
+  it('should display a table in the specified color and bold, if set that way', function () {
+    l.table('hello').bold().color('green').log();
+    consoleStub.getLastLog().split('\n').should.eql([
+      '\033[1;32m+-------+',
+                '| hello |',
+                '+-------+\u001b[0m'
+    ]);
   });
 });
 
 describe('Method Chaining without the global prototype', function () {
 
+  beforeEach(function () {
+    consoleStub.clear();
+  });
+
+  it('should be able to add a color', function () {
+    'wow'.log.color('green').log();
+    consoleStub.getLastLog().should.equal([ '\033[32m', 'wow', '\u001b[0m' ].join(''));
+  });
+
+  it('should be able to add a color and bold', function () {
+    'wow'.log.color('green').bold().log();
+    consoleStub.getLastLog().should.equal([ '\033[1;32m', 'wow', '\u001b[0m' ].join(''));
+    //'wow'.log.bold().color('green').log();
+    //consoleStub.getLastLog().should.equal([ '\033[1;32m', 'wow', '\u001b[0m' ].join(''));
+  });
 });

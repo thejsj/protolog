@@ -23,4 +23,8 @@ _console.getLastLog = function () {
   return this._logs[this._logs.length - 1];
 };
 
+_console.clear = function () {
+  this._logs = [];
+};
+
 module.exports = _console;
