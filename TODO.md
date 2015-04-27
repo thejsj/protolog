@@ -5,8 +5,10 @@
 - [x] Add backend testing (mocha)
 - [x] Add display methods
 - [ ] Add type display method
+- [ ] Add `gap` method, adds line above and below
 - [ ] Add Transformations
 - [ ] Change they way in which colors work, in order to support colors inside tables
+- [ ] Add chaining methods for prototype. Fix `bind`.
 
 ### Testing
 

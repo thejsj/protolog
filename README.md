@@ -11,6 +11,8 @@
     - [`underline`](#method-underline)
     - [`background`](#method-background)
     - [`table`](#method-table)
+    - [Method Chaining](#method-chaining)
+    - [Available Colors](#colors)
 - [Is this a terrible idea?](#is-this-a-terrible-idea)
 - [The Future](#the-future)
 
@@ -202,6 +204,21 @@ Displays:
 +---+---+---+---+
 ```
 
+### Method Chaining <a name='method-chaining'>
+
+When using the method through the `log` function and not through the prototype `log` method, you can chain methods together.
+
+Making a log green, bold and underlined.
+
+```
+log.color(‘hello’, ‘green’).bold().underline().log();
+```
+
+Creating a green table:
+
+```
+log.color([1, 2, 3], ‘green’).table().log();
+```
 ### Available Colors <a name='colors'></a>
 
 Available colors are:
