@@ -246,7 +246,7 @@ describe('Method Chaining without the global prototype', function () {
   it('should be able to add a color and bold', function () {
     'wow'.log.color('green').bold().log();
     consoleStub.getLastLog().should.equal([ '\033[1;32m', 'wow', '\u001b[0m' ].join(''));
-    //'wow'.log.bold().color('green').log();
-    //consoleStub.getLastLog().should.equal([ '\033[1;32m', 'wow', '\u001b[0m' ].join(''));
+    'wow'.log.bold().color('green').log();
+    consoleStub.getLastLog().should.equal([ '\033[1;32m', 'wow', '\u001b[0m' ].join(''));
   });
 });
