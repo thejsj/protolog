@@ -1,57 +1,356 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.protoLog = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 module.exports = require('./lib/index.js');
 
-},{"./lib/index.js":3}],2:[function(require,module,exports){
+},{"./lib/index.js":4}],2:[function(require,module,exports){
 module.exports = {
 
-  reset: '\033[0m',
+  // beginning + (underline and/or bold) + (text or background) + end
+  beginning: '\033[',
+  end: '\u001b[0m',
 
-  text : {
-    'black': '\033[30m',
-    'red': '\033[31m',
-    'green': '\033[32m',
-    'yellow': '\033[33m',
-    'purple': '\033[34m',
-    'pink': '\033[35m',
-    'cyan': '\033[36m',
-    'grey': '\033[37m'
+  colors: {
+    'black':  '0m',
+    'red':    '1m',
+    'green':  '2m',
+    'yellow': '3m',
+    'purple': '4m',
+    'pink':   '5m',
+    'cyan':   '6m',
+    'grey':   '7m'
   },
 
-  bold : {
-    'black': '\033[1;30m',
-    'red': '\033[1;31m',
-    'green': '\033[1;32m',
-    'yellow': '\033[1;33m',
-    'purple': '\033[1;34m',
-    'pink': '\033[1;35m',
-    'cyan': '\033[1;36m',
-    'grey': '\033[1;37m'
-  },
+  text: '3', // \033[ + 3 + 0m
+  background : '4',
 
-  underline : {
-    'black': '\033[4;30m',
-    'red': '\033[4;34m',
-    'green': '\033[4;32m',
-    'yellow': '\033[4;33m',
-    'purple': '\033[4;34m',
-    'pink': '\033[4;35m',
-    'cyan': '\033[4;36m',
-    'grey': '\033[4;37m'
-  },
+  bold : '1;', // \033[1;30m
+  underline : '4;', // \033[4;40m
+};
 
-  background : {
-    'black': '\033[40m',
-    'red': '\033[41m',
-    'green': '\033[42m',
-    'yellow': '\033[43m',
-    'purple': '\033[44m',
-    'pink': '\033[45m',
-    'cyan': '\033[46m',
-    'grey': '\033[47m'
+},{}],3:[function(require,module,exports){
+var colorCodes = require('./color-codes.js');
+var FutureLog = function FutureLog (value, logStr) {
+  __self = {};
+  __self.value = value;
+  __self.str = this.getString();
+  // Styling defaults
+  __self.color = false;
+  __self.background = false;
+  __self.bold = false;
+  __self.underline = false;
+  this.__self = __self;
+};
+
+FutureLog.prototype = Object.create(Object.prototype);
+FutureLog.prototype.constructor = FutureLog;
+
+/*!
+ * Update the log's string
+ * @param <String>
+ */
+FutureLog.prototype.setString = function (str) {
+  __self.str = str;
+};
+
+/*!
+ * Get the log's string value
+ * @return <String>
+ */
+FutureLog.prototype.getString= function () {
+  if (__self.str === undefined) __self.str = __self.value;
+  if (__self.str === null) return 'null';
+  if (__self.str === undefined) return 'undefined';
+  if (__self.str.valueOf !== undefined) {
+    return __self.str.valueOf();
+  }
+  return __self.str;
+};
+
+/*!
+ * Get the log's original value
+ * @return <Any>
+ */
+FutureLog.prototype.getValue = function () {
+  if (__self.value === null) return null;
+  if (__self.value === undefined) return undefined;
+  if (__self.value.valueOf === undefined) return __self.value;
+  return __self.value.valueOf();
+};
+
+  /*!
+   * Turn any value into a two dimensional array
+   * @param <Any>
+   * @return <Array>
+   */
+  FutureLog.prototype._getTwoDimensionalArray = function (obj, isTwoDimensionalArray) {
+    var getArrayValue = function (level, val)  {
+      if (level > 1) {
+        if (val === undefined) return 'undefined';
+        if (val === null) return 'null';
+        return val.toString();
+      }
+      if (Array.isArray(val)) {
+        if (level === 1 && !isTwoDimensionalArray) {
+          return [val.toString()];
+        }
+        return val.map(function (_val) {
+          return getArrayValue(level + 1, _val);
+        });
+      }
+     return [ getArrayValue(level + 1, val) ];
+    };
+    return getArrayValue(0, obj);
+  };
+
+  /*!
+   * Given a two dimensional array, return an array with all the max column widths
+   * The function assumes an array of arrays where all array lengths are equal and
+   * all values inside the matrix are strings
+   * @param <Array[<Array[<String>]>]>
+   * @return <Array [<Number>]>
+   */
+  FutureLog.prototype._getMaxColLengths = function (arr) {
+    var maxColLengths = [];
+    // Check that all arrays are the same length
+    for (var j = 0; j < arr.length; j += 1) {
+      if (arr[j].length !== arr[0].length) {
+        throw new Error('Arrays in matrix are not all the same length.');
+      }
+    }
+    for (var ii = 0; ii < arr[0].length; ii += 1) {
+      var max = 0;
+      for (var i = 0; i < arr.length; i += 1) {
+        if (typeof arr[i][ii] !== 'string') {
+          throw new TypeError('Value of type `' + (typeof arr[i][ii]) + '` inside matrix is not a string');
+        }
+        max = Math.max(max, arr[i][ii].length);
+      }
+      maxColLengths[ii] = max;
+    }
+    return maxColLengths;
+  };
+
+  /*!
+   * Return true value if value is a two dimensional array
+   * @param <Any>
+   * @return <Boolean>
+   */
+  FutureLog.prototype._isTwoDimensionalArray = function (value) {
+    if (!Array.isArray(value)) return false;
+    if (!Array.isArray(value[0])) return false;
+    var childArrayLength = value[0].length;
+    for (var i = 1; i < value.length; i += 1) {
+      if (!Array.isArray(value[i])) return false;
+    }
+    return true;
+  };
+
+  /*!
+   * Return true value is a matrix
+   * @param <Any>
+   * @return <Boolean>
+   */
+  FutureLog.prototype._isMatrix = function (value, isTwoDimensionalArray) {
+    if (isTwoDimensionalArray === false) return false;
+    // Save some time if we already know it's a 2 dimensional array
+    if (isTwoDimensionalArray === true) {
+      var childArrayLength = value[0].length;
+      for (var i = 1; i < value.length; i += 1) {
+        if (value[i].length !== childArrayLength) return false;
+      }
+      return true;
+    }
+    // If we also have to check if it's a two dimensional array
+    if (!Array.isArray(value)) return false;
+    if (!Array.isArray(value[0])) return false;
+    var _childArrayLength = value[0].length;
+    for (var z = 1; z < value.length; z += 1) {
+      if (!Array.isArray(value[z])) return false;
+      if (value[z].length !== _childArrayLength) return false;
+    }
+    return true;
+  };
+
+  /*!
+   * Return a string that is at least N char long
+   * If original string is not long enough, add spaces at the end of string
+   * @param <String>
+   * @param <Number>
+   * @return <String>
+   */
+  FutureLog.prototype._minStringLength = function (str, minLength) {
+    if (typeof str !== 'string') throw new TypeError('str argument must be a string. `' + str + '` is not a string.');
+    if (typeof minLength !== 'number') throw new TypeError('minLength argument must be a number. `' + minLength + '` is not a number.');
+    if (str.length === minLength) return str;
+    var remainingChars = minLength - str.length;
+    var spaces = '';
+    for (var i = 0; i < remainingChars; i += 1) spaces += ' ';
+    return str + spaces;
+  };
+
+  /*!
+   * Take a two dimendional array and make all the arrays in it
+   * the same length by adding an empty string
+   * @param <Array [<Array>]>
+   * @return <Array [<Array>]>
+   */
+  FutureLog.prototype._normalizeTwoDimensionalArrayLength = function (arr) {
+    var maxLength = 0;
+    if (!Array.isArray(arr)) throw new TypeError('value `' + arr + '` must be an array');
+    for (var i = 0; i < arr.length; i += 1) {
+      if (!Array.isArray(arr[i])) throw new TypeError('value `' + arr + '` must be an array');
+      maxLength = Math.max(maxLength, arr[i].length);
+    }
+    for (var j = 0; j < arr.length; j += 1) {
+      if (arr[j].length !== maxLength) {
+        for (var jj = arr[j].length; jj < maxLength; jj += 1) {
+          arr[j].push('');
+        }
+      }
+    }
+    return arr;
+  };
+
+/*!
+ * Styling
+ *
+ * We want to apply styling properties (color, underline, bold, background) at
+ * log time. Hence, we save the styling properties in the object.
+ */
+
+/*!
+ * Set log text color
+ * @param <String>
+ */
+FutureLog.prototype.color = function (colorName) {
+  if (typeof colorName !== 'string') throw new TypeError('Color (' + colorName + ') must be a string');
+  __self.color = colorName;
+  return this;
+};
+
+/*!
+ * Set whether the log should be underlined
+ * @param <Boolean>
+ * @return <Object>
+ */
+FutureLog.prototype.underline = function (bool) {
+  if (typeof bool !== 'boolean' && bool !== undefined) throw new TypeError('var (' + bool + ') must be a boolean or undefined');
+  if (bool === undefined) bool = true;
+  __self.underline = bool;
+  return this;
+};
+
+/*!
+ * Set whether the log should be bold
+ * @param <Boolean>
+ * @return <Object>
+ */
+FutureLog.prototype.bold = function (bool) {
+  if (typeof bool !== 'boolean' && bool !== undefined) throw new TypeError('var (' + bool + ') must be a boolean or undefined');
+  if (bool === undefined) bool = true;
+  __self.bold = bool;
+  return this;
+};
+
+/*!
+ * Set log background color
+ * @param <String>
+ * @return <Object>
+ */
+FutureLog.prototype.background= function (colorName) {
+  if (typeof colorName !== 'string') throw new TypeError('Background color (' + colorName + ') must be a string');
+  __self.backgroundColor = colorName;
+  return this;
+};
+
+/*!
+ * Set string as table
+ * @return <Object>
+ */
+FutureLog.prototype.table = function () {
+  // Convert value into a two dimensional array
+  var isArray = Array.isArray(__self.value);
+  var isTwoDimensionalArray = this._isTwoDimensionalArray(__self.value);
+  var isMatrix = this._isMatrix(__self.value, isTwoDimensionalArray);
+  var matrix = this._getTwoDimensionalArray(__self.value, isTwoDimensionalArray);
+  if (isTwoDimensionalArray && !isMatrix) matrix = this._normalizeTwoDimensionalArrayLength(matrix);
+  // If the origin value is an array, append an index to the display matrix as the first column
+  if (isArray) {
+    for (var j = 0; j < matrix.length; j += 1) {
+      matrix[j].unshift('' + j);
+    }
+  }
+  if (isTwoDimensionalArray) {
+    matrix.unshift([' ']);
+    for (var y = 0; y < matrix[1].length - 1; y += 1) {
+      matrix[0].push('' + y);
+    }
+  }
+  var maxColLengths = this._getMaxColLengths(matrix);
+
+  // Convert two dimensional array into table
+  var tblString = '';
+  var topBottomRowString = '+';
+  for (var z = 0; z < maxColLengths.length; z ++) {
+    topBottomRowString += '-';
+    for(var zz = 0; zz < maxColLengths[z]; zz++) {
+      topBottomRowString += '-';
+    }
+    topBottomRowString += '-+';
   }
 
-}
-},{}],3:[function(require,module,exports){
+  // rows
+  tblString += topBottomRowString + '\n';
+  for(var i = 0; i < matrix.length; i++){
+    tblString += '|';
+    for(var ii = 0; ii < matrix[i].length; ii++){
+     tblString += ' ';
+     var str = this._minStringLength(matrix[i][ii], maxColLengths[ii]);
+      for(var iii = 0; iii < str.length; iii++){
+        tblString += str[iii];
+      }
+     tblString += ' |';
+    }
+    tblString += '\n';
+    if (i !== (matrix.length - 1)) {
+      tblString += topBottomRowString + '\n';
+    }
+  }
+  tblString += topBottomRowString;
+
+  this.setString(tblString);
+  return this;
+};
+
+/*!
+ * Apply styling strings to string
+ */
+FutureLog.prototype._applyStyling = function () {
+  if (__self.color || __self.backgroundColor || __self.underline || __self.bold) {
+    var newStr = '';
+    newStr += colorCodes.beginning;
+    if (__self.underline) newStr += colorCodes.underline;
+    if (__self.bold) newStr += colorCodes.bold;
+    if (__self.background) {
+      newStr += colorCodes.background;
+    } else {
+      newStr += colorCodes.text;
+    }
+    if (__self.background) {
+      newStr += colorCodes.colors[__self.color];
+    } else if (__self.color){
+      newStr += colorCodes.colors[__self.color];
+    } else {
+      newStr += colorCodes.colors.black;
+    }
+    newStr += this.getString();
+    newStr += colorCodes.end;
+    __self.str = newStr;
+  }
+};
+
+module.exports = FutureLog;
+
+},{"./color-codes.js":2}],4:[function(require,module,exports){
 var _defaults = require('lodash/object/defaults');
 
 var protoLog = require('./protolog');
@@ -65,6 +364,7 @@ var protoLogWrapper = function (opts) {
   opts = _defaults(opts || {}, {
     propertyName: 'log',
     appendToPrototype: true, // true
+    loggingFunction: console
  });
 
   /**
@@ -94,24 +394,40 @@ var protoLogWrapper = function (opts) {
 
 module.exports = protoLogWrapper;
 
-},{"./protolog":4,"lodash/object/defaults":49}],4:[function(require,module,exports){
+},{"./protolog":5,"lodash/object/defaults":50}],5:[function(require,module,exports){
 var bind = require('lodash/function/bind');
-var colorCodes = require('./colorCodes.js');
-
-var log = bind(console.log, console);
+var extend = require('lodash/object/extend');
+var FutureLog = require('./future-log.js');
 
 module.exports = function (opts, self) {
+
+  var log = bind(opts.loggingFunction.log, opts.loggingFunction);
+  var isNode = (module !== undefined && module.exports !== undefined);
 
   /*!
    * If our `exports` function is called by our prototype
    * then a `self` will be passed which will be used by
    * all methods as the main value to be logged
    */
-  var self = (self === undefined) ? false : self;
+  self = (self === undefined) ? false : self;
 
-  var protoLog = (function () {
+  var __self = {};
+
+  __self.getColor = function (property, color) {
+    color = color.toLowerCase();
+    if (color === undefined) color = 'black';
+    if (colorCodes[property][color] !== undefined) return colorCodes.text[color];
+    return colorCodes.text.black;
+  };
+
+   var protoLog = (function () {
     // Our main logging function
     var __protolog = function (obj) {
+      if (obj.constructor === FutureLog)  {
+        obj._applyStyling();
+        log(obj.getString());
+        return obj.getValue();
+      }
       log(obj.valueOf());
       return obj.valueOf();
     };
@@ -124,52 +440,34 @@ module.exports = function (opts, self) {
   }());
 
   protoLog.color = function (obj, color) {
-    var color = (color !== undefined) ? color.toLowerCase() : 'black';
-    log(colorCodes.text[color], obj.valueOf(), colorCodes.reset);
-    return obj.valueOf();
+    if (obj.constructor !== FutureLog) obj = new FutureLog(obj);
+    obj.color(color);
+    return obj;
   };
 
-  protoLog.bold = function (obj, color) {
-    var color = (color !== undefined) ? color.toLowerCase() : 'black';
-    log(colorCodes.bold[color], obj.valueOf(), colorCodes.reset);
-    return obj.valueOf();
+  protoLog.bold = function (obj) {
+    if (obj.constructor !== FutureLog) obj = new FutureLog(obj);
+    obj.bold(true);
+    return obj;
   };
 
-  protoLog.underline = function (obj, color) {
-    var color = (color !== undefined) ? color.toLowerCase() : 'black';
-    log(colorCodes.underline[color], obj.valueOf(), colorCodes.reset);
-    return obj.valueOf();
+  protoLog.underline = function (obj) {
+    if (obj.constructor !== FutureLog) obj = new FutureLog(obj);
+    obj.underline(true);
+    return obj;
   };
 
   protoLog.background = function (obj, color) {
-    var color = color.toLowerCase();
-    log(colorCodes.background[color], obj.valueOf(), colorCodes.reset);
-    return obj.valueOf();
+    if (obj.constructor !== FutureLog) obj = new FutureLog(obj);
+    obj.background(color);
+    return obj;
   };
 
-  // protoLog.table = function (obj) {
-  //   var obj = obj.valueOf();
-  //   var tbl = {
-  //     top : '+-',
-  //     mid : '| ',
-  //     bot : '+-'
-  //   };
-
-  //   if(typeof obj === 'string'){
-  //     for(var i = 0; i < obj.length; i++){
-  //       tbl.top += '-';
-  //       tbl.mid += obj[i];
-  //       tbl.bot += '-';
-  //     }
-  //   }
-
-  //   tbl.top += '-+';
-  //   tbl.mid += ' |';
-  //   tbl.bot += '-+';
-
-  //   log(tbl.top.concat('\n', tbl.mid, '\n', tbl.bot));
-  //   return obj;
-  // };
+  protoLog.table = function (obj) {
+      if (!(obj instanceof FutureLog)) obj = new FutureLog(obj);
+     obj.table();
+     return obj;
+   };
 
   /*!
    * Bind every function to self, if self has been provided.
@@ -177,6 +475,7 @@ module.exports = function (opts, self) {
    */
   if (self) {
     for (var i in protoLog) {
+      // extend(FutureLog.prototype, protoLog);
       protoLog[i] = bind(protoLog[i], null, self);
     }
   }
@@ -184,7 +483,7 @@ module.exports = function (opts, self) {
   return protoLog;
 };
 
-},{"./colorCodes.js":2,"lodash/function/bind":7}],5:[function(require,module,exports){
+},{"./future-log.js":3,"lodash/function/bind":8,"lodash/object/extend":51}],6:[function(require,module,exports){
 var LazyWrapper = require('../internal/LazyWrapper'),
     LodashWrapper = require('../internal/LodashWrapper'),
     baseLodash = require('../internal/baseLodash'),
@@ -308,7 +607,7 @@ lodash.prototype = baseLodash.prototype;
 
 module.exports = lodash;
 
-},{"../internal/LazyWrapper":9,"../internal/LodashWrapper":10,"../internal/baseLodash":16,"../internal/isObjectLike":35,"../internal/wrapperClone":43,"../lang/isArray":45}],6:[function(require,module,exports){
+},{"../internal/LazyWrapper":10,"../internal/LodashWrapper":11,"../internal/baseLodash":17,"../internal/isObjectLike":36,"../internal/wrapperClone":44,"../lang/isArray":46}],7:[function(require,module,exports){
 var isNative = require('../lang/isNative');
 
 /* Native method references for those with the same name as other `lodash` methods. */
@@ -334,7 +633,7 @@ var now = nativeNow || function() {
 
 module.exports = now;
 
-},{"../lang/isNative":46}],7:[function(require,module,exports){
+},{"../lang/isNative":47}],8:[function(require,module,exports){
 var createWrapper = require('../internal/createWrapper'),
     replaceHolders = require('../internal/replaceHolders'),
     restParam = require('./restParam');
@@ -392,7 +691,7 @@ bind.placeholder = {};
 
 module.exports = bind;
 
-},{"../internal/createWrapper":28,"../internal/replaceHolders":40,"./restParam":8}],8:[function(require,module,exports){
+},{"../internal/createWrapper":29,"../internal/replaceHolders":41,"./restParam":9}],9:[function(require,module,exports){
 /** Used as the `TypeError` message for "Functions" methods. */
 var FUNC_ERROR_TEXT = 'Expected a function';
 
@@ -452,7 +751,7 @@ function restParam(func, start) {
 
 module.exports = restParam;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var baseCreate = require('./baseCreate'),
     baseLodash = require('./baseLodash');
 
@@ -481,7 +780,7 @@ LazyWrapper.prototype.constructor = LazyWrapper;
 
 module.exports = LazyWrapper;
 
-},{"./baseCreate":15,"./baseLodash":16}],10:[function(require,module,exports){
+},{"./baseCreate":16,"./baseLodash":17}],11:[function(require,module,exports){
 var baseCreate = require('./baseCreate'),
     baseLodash = require('./baseLodash');
 
@@ -504,7 +803,7 @@ LodashWrapper.prototype.constructor = LodashWrapper;
 
 module.exports = LodashWrapper;
 
-},{"./baseCreate":15,"./baseLodash":16}],11:[function(require,module,exports){
+},{"./baseCreate":16,"./baseLodash":17}],12:[function(require,module,exports){
 /**
  * Copies the values of `source` to `array`.
  *
@@ -526,7 +825,7 @@ function arrayCopy(source, array) {
 
 module.exports = arrayCopy;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /**
  * Used by `_.defaults` to customize its `_.assign` use.
  *
@@ -541,7 +840,7 @@ function assignDefaults(objectValue, sourceValue) {
 
 module.exports = assignDefaults;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var baseCopy = require('./baseCopy'),
     keys = require('../object/keys');
 
@@ -578,7 +877,7 @@ function baseAssign(object, source, customizer) {
 
 module.exports = baseAssign;
 
-},{"../object/keys":50,"./baseCopy":14}],14:[function(require,module,exports){
+},{"../object/keys":52,"./baseCopy":15}],15:[function(require,module,exports){
 /**
  * Copies the properties of `source` to `object`.
  *
@@ -605,7 +904,7 @@ function baseCopy(source, object, props) {
 
 module.exports = baseCopy;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 (function (global){
 var isObject = require('../lang/isObject');
 
@@ -632,7 +931,7 @@ var baseCreate = (function() {
 module.exports = baseCreate;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isObject":47}],16:[function(require,module,exports){
+},{"../lang/isObject":48}],17:[function(require,module,exports){
 /**
  * The function whose prototype all chaining wrappers inherit from.
  *
@@ -644,7 +943,7 @@ function baseLodash() {
 
 module.exports = baseLodash;
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * The base implementation of `_.property` which does not coerce `key` to a string.
  *
@@ -660,7 +959,7 @@ function baseProperty(key) {
 
 module.exports = baseProperty;
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var identity = require('../utility/identity'),
     metaMap = require('./metaMap');
 
@@ -679,7 +978,7 @@ var baseSetData = !metaMap ? identity : function(func, data) {
 
 module.exports = baseSetData;
 
-},{"../utility/identity":55,"./metaMap":37}],19:[function(require,module,exports){
+},{"../utility/identity":57,"./metaMap":38}],20:[function(require,module,exports){
 /**
  * Converts `value` to a string if it is not one. An empty string is returned
  * for `null` or `undefined` values.
@@ -697,7 +996,7 @@ function baseToString(value) {
 
 module.exports = baseToString;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var identity = require('../utility/identity');
 
 /**
@@ -738,7 +1037,7 @@ function bindCallback(func, thisArg, argCount) {
 
 module.exports = bindCallback;
 
-},{"../utility/identity":55}],21:[function(require,module,exports){
+},{"../utility/identity":57}],22:[function(require,module,exports){
 /* Native method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
 
@@ -774,7 +1073,7 @@ function composeArgs(args, partials, holders) {
 
 module.exports = composeArgs;
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /* Native method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
 
@@ -812,7 +1111,7 @@ function composeArgsRight(args, partials, holders) {
 
 module.exports = composeArgsRight;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var bindCallback = require('./bindCallback'),
     isIterateeCall = require('./isIterateeCall');
 
@@ -863,7 +1162,7 @@ function createAssigner(assigner) {
 
 module.exports = createAssigner;
 
-},{"./bindCallback":20,"./isIterateeCall":32}],24:[function(require,module,exports){
+},{"./bindCallback":21,"./isIterateeCall":33}],25:[function(require,module,exports){
 (function (global){
 var createCtorWrapper = require('./createCtorWrapper');
 
@@ -889,7 +1188,7 @@ function createBindWrapper(func, thisArg) {
 module.exports = createBindWrapper;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./createCtorWrapper":25}],25:[function(require,module,exports){
+},{"./createCtorWrapper":26}],26:[function(require,module,exports){
 var baseCreate = require('./baseCreate'),
     isObject = require('../lang/isObject');
 
@@ -914,7 +1213,7 @@ function createCtorWrapper(Ctor) {
 
 module.exports = createCtorWrapper;
 
-},{"../lang/isObject":47,"./baseCreate":15}],26:[function(require,module,exports){
+},{"../lang/isObject":48,"./baseCreate":16}],27:[function(require,module,exports){
 (function (global){
 var arrayCopy = require('./arrayCopy'),
     composeArgs = require('./composeArgs'),
@@ -1030,7 +1329,7 @@ function createHybridWrapper(func, bitmask, thisArg, partials, holders, partials
 module.exports = createHybridWrapper;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./arrayCopy":11,"./composeArgs":21,"./composeArgsRight":22,"./createCtorWrapper":25,"./isLaziable":33,"./reorder":39,"./replaceHolders":40,"./setData":41}],27:[function(require,module,exports){
+},{"./arrayCopy":12,"./composeArgs":22,"./composeArgsRight":23,"./createCtorWrapper":26,"./isLaziable":34,"./reorder":40,"./replaceHolders":41,"./setData":42}],28:[function(require,module,exports){
 (function (global){
 var createCtorWrapper = require('./createCtorWrapper');
 
@@ -1077,7 +1376,7 @@ function createPartialWrapper(func, bitmask, thisArg, partials) {
 module.exports = createPartialWrapper;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./createCtorWrapper":25}],28:[function(require,module,exports){
+},{"./createCtorWrapper":26}],29:[function(require,module,exports){
 var baseSetData = require('./baseSetData'),
     createBindWrapper = require('./createBindWrapper'),
     createHybridWrapper = require('./createHybridWrapper'),
@@ -1165,7 +1464,7 @@ function createWrapper(func, bitmask, thisArg, partials, holders, argPos, ary, a
 
 module.exports = createWrapper;
 
-},{"./baseSetData":18,"./createBindWrapper":24,"./createHybridWrapper":26,"./createPartialWrapper":27,"./getData":29,"./mergeData":36,"./setData":41}],29:[function(require,module,exports){
+},{"./baseSetData":19,"./createBindWrapper":25,"./createHybridWrapper":27,"./createPartialWrapper":28,"./getData":30,"./mergeData":37,"./setData":42}],30:[function(require,module,exports){
 var metaMap = require('./metaMap'),
     noop = require('../utility/noop');
 
@@ -1182,7 +1481,7 @@ var getData = !metaMap ? noop : function(func) {
 
 module.exports = getData;
 
-},{"../utility/noop":56,"./metaMap":37}],30:[function(require,module,exports){
+},{"../utility/noop":58,"./metaMap":38}],31:[function(require,module,exports){
 var baseProperty = require('./baseProperty'),
     constant = require('../utility/constant'),
     realNames = require('./realNames'),
@@ -1221,7 +1520,7 @@ var getFuncName = (function() {
 
 module.exports = getFuncName;
 
-},{"../support":53,"../utility/constant":54,"./baseProperty":17,"./realNames":38}],31:[function(require,module,exports){
+},{"../support":55,"../utility/constant":56,"./baseProperty":18,"./realNames":39}],32:[function(require,module,exports){
 /**
  * Used as the [maximum length](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
  * of an array-like value.
@@ -1244,7 +1543,7 @@ function isIndex(value, length) {
 
 module.exports = isIndex;
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var isIndex = require('./isIndex'),
     isLength = require('./isLength'),
     isObject = require('../lang/isObject');
@@ -1278,7 +1577,7 @@ function isIterateeCall(value, index, object) {
 
 module.exports = isIterateeCall;
 
-},{"../lang/isObject":47,"./isIndex":31,"./isLength":34}],33:[function(require,module,exports){
+},{"../lang/isObject":48,"./isIndex":32,"./isLength":35}],34:[function(require,module,exports){
 var LazyWrapper = require('./LazyWrapper'),
     getFuncName = require('./getFuncName'),
     lodash = require('../chain/lodash');
@@ -1297,7 +1596,7 @@ function isLaziable(func) {
 
 module.exports = isLaziable;
 
-},{"../chain/lodash":5,"./LazyWrapper":9,"./getFuncName":30}],34:[function(require,module,exports){
+},{"../chain/lodash":6,"./LazyWrapper":10,"./getFuncName":31}],35:[function(require,module,exports){
 /**
  * Used as the [maximum length](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
  * of an array-like value.
@@ -1319,7 +1618,7 @@ function isLength(value) {
 
 module.exports = isLength;
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /**
  * Checks if `value` is object-like.
  *
@@ -1333,7 +1632,7 @@ function isObjectLike(value) {
 
 module.exports = isObjectLike;
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var arrayCopy = require('./arrayCopy'),
     composeArgs = require('./composeArgs'),
     composeArgsRight = require('./composeArgsRight'),
@@ -1424,7 +1723,7 @@ function mergeData(data, source) {
 
 module.exports = mergeData;
 
-},{"./arrayCopy":11,"./composeArgs":21,"./composeArgsRight":22,"./replaceHolders":40}],37:[function(require,module,exports){
+},{"./arrayCopy":12,"./composeArgs":22,"./composeArgsRight":23,"./replaceHolders":41}],38:[function(require,module,exports){
 (function (global){
 var isNative = require('../lang/isNative');
 
@@ -1437,13 +1736,13 @@ var metaMap = WeakMap && new WeakMap;
 module.exports = metaMap;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":46}],38:[function(require,module,exports){
+},{"../lang/isNative":47}],39:[function(require,module,exports){
 /** Used to lookup unminified function names. */
 var realNames = {};
 
 module.exports = realNames;
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 var arrayCopy = require('./arrayCopy'),
     isIndex = require('./isIndex');
 
@@ -1474,7 +1773,7 @@ function reorder(array, indexes) {
 
 module.exports = reorder;
 
-},{"./arrayCopy":11,"./isIndex":31}],40:[function(require,module,exports){
+},{"./arrayCopy":12,"./isIndex":32}],41:[function(require,module,exports){
 /** Used as the internal argument placeholder. */
 var PLACEHOLDER = '__lodash_placeholder__';
 
@@ -1504,7 +1803,7 @@ function replaceHolders(array, placeholder) {
 
 module.exports = replaceHolders;
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 var baseSetData = require('./baseSetData'),
     now = require('../date/now');
 
@@ -1547,7 +1846,7 @@ var setData = (function() {
 
 module.exports = setData;
 
-},{"../date/now":6,"./baseSetData":18}],42:[function(require,module,exports){
+},{"../date/now":7,"./baseSetData":19}],43:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('./isIndex'),
@@ -1591,7 +1890,7 @@ function shimKeys(object) {
 
 module.exports = shimKeys;
 
-},{"../lang/isArguments":44,"../lang/isArray":45,"../object/keysIn":51,"../support":53,"./isIndex":31,"./isLength":34}],43:[function(require,module,exports){
+},{"../lang/isArguments":45,"../lang/isArray":46,"../object/keysIn":53,"../support":55,"./isIndex":32,"./isLength":35}],44:[function(require,module,exports){
 var LazyWrapper = require('./LazyWrapper'),
     LodashWrapper = require('./LodashWrapper'),
     arrayCopy = require('./arrayCopy');
@@ -1611,7 +1910,7 @@ function wrapperClone(wrapper) {
 
 module.exports = wrapperClone;
 
-},{"./LazyWrapper":9,"./LodashWrapper":10,"./arrayCopy":11}],44:[function(require,module,exports){
+},{"./LazyWrapper":10,"./LodashWrapper":11,"./arrayCopy":12}],45:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -1650,7 +1949,7 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{"../internal/isLength":34,"../internal/isObjectLike":35}],45:[function(require,module,exports){
+},{"../internal/isLength":35,"../internal/isObjectLike":36}],46:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('./isNative'),
     isObjectLike = require('../internal/isObjectLike');
@@ -1692,7 +1991,7 @@ var isArray = nativeIsArray || function(value) {
 
 module.exports = isArray;
 
-},{"../internal/isLength":34,"../internal/isObjectLike":35,"./isNative":46}],46:[function(require,module,exports){
+},{"../internal/isLength":35,"../internal/isObjectLike":36,"./isNative":47}],47:[function(require,module,exports){
 var escapeRegExp = require('../string/escapeRegExp'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -1748,7 +2047,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{"../internal/isObjectLike":35,"../string/escapeRegExp":52}],47:[function(require,module,exports){
+},{"../internal/isObjectLike":36,"../string/escapeRegExp":54}],48:[function(require,module,exports){
 /**
  * Checks if `value` is the [language type](https://es5.github.io/#x8) of `Object`.
  * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
@@ -1778,7 +2077,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 var baseAssign = require('../internal/baseAssign'),
     createAssigner = require('../internal/createAssigner');
 
@@ -1815,7 +2114,7 @@ var assign = createAssigner(baseAssign);
 
 module.exports = assign;
 
-},{"../internal/baseAssign":13,"../internal/createAssigner":23}],49:[function(require,module,exports){
+},{"../internal/baseAssign":14,"../internal/createAssigner":24}],50:[function(require,module,exports){
 var assign = require('./assign'),
     assignDefaults = require('../internal/assignDefaults'),
     restParam = require('../function/restParam');
@@ -1847,7 +2146,10 @@ var defaults = restParam(function(args) {
 
 module.exports = defaults;
 
-},{"../function/restParam":8,"../internal/assignDefaults":12,"./assign":48}],50:[function(require,module,exports){
+},{"../function/restParam":9,"../internal/assignDefaults":13,"./assign":49}],51:[function(require,module,exports){
+module.exports = require('./assign');
+
+},{"./assign":49}],52:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('../lang/isNative'),
     isObject = require('../lang/isObject'),
@@ -1897,7 +2199,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 
 module.exports = keys;
 
-},{"../internal/isLength":34,"../internal/shimKeys":42,"../lang/isNative":46,"../lang/isObject":47}],51:[function(require,module,exports){
+},{"../internal/isLength":35,"../internal/shimKeys":43,"../lang/isNative":47,"../lang/isObject":48}],53:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('../internal/isIndex'),
@@ -1964,7 +2266,7 @@ function keysIn(object) {
 
 module.exports = keysIn;
 
-},{"../internal/isIndex":31,"../internal/isLength":34,"../lang/isArguments":44,"../lang/isArray":45,"../lang/isObject":47,"../support":53}],52:[function(require,module,exports){
+},{"../internal/isIndex":32,"../internal/isLength":35,"../lang/isArguments":45,"../lang/isArray":46,"../lang/isObject":48,"../support":55}],54:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -1998,7 +2300,7 @@ function escapeRegExp(string) {
 
 module.exports = escapeRegExp;
 
-},{"../internal/baseToString":19}],53:[function(require,module,exports){
+},{"../internal/baseToString":20}],55:[function(require,module,exports){
 (function (global){
 /** Used for native method references. */
 var objectProto = Object.prototype;
@@ -2072,7 +2374,7 @@ var support = {};
 module.exports = support;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],54:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 /**
  * Creates a function that returns `value`.
  *
@@ -2097,7 +2399,7 @@ function constant(value) {
 
 module.exports = constant;
 
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 /**
  * This method returns the first argument provided to it.
  *
@@ -2119,7 +2421,7 @@ function identity(value) {
 
 module.exports = identity;
 
-},{}],56:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 /**
  * A no-operation function which returns `undefined` regardless of the
  * arguments it receives.
