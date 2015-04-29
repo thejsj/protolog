@@ -249,4 +249,23 @@ describe('Method Chaining without the global prototype', function () {
     'wow'.log.bold().color('green').log();
     consoleStub.getLastLog().should.equal([ '\033[1;32m', 'wow', '\u001b[0m' ].join(''));
   });
+
+  it('should display a table in the specified color, if set that way', function () {
+    'hello'.log.table().color('green').log();
+    consoleStub.getLastLog().split('\n').should.eql([
+      '\033[32m+-------+',
+              '| hello |',
+              '+-------+\u001b[0m'
+    ]);
+  });
+
+  it('should display a table in the specified color and bold, if set that way', function () {
+    'hello'.log.table().bold().color('green').log();
+    consoleStub.getLastLog().split('\n').should.eql([
+      '\033[1;32m+-------+',
+                '| hello |',
+                '+-------+\u001b[0m'
+    ]);
+  });
+
 });
