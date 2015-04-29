@@ -206,19 +206,22 @@ Displays:
 
 ### Method Chaining <a name='method-chaining'>
 
-When using the method through the `log` function and not through the prototype `log` method, you can chain methods together.
+You can chain methods together to log something in different ways.
 
 Making a log green, bold and underlined.
 
 ```
+var l = require(‘protolog’)();
 log.color(‘hello’, ‘green’).bold().underline().log();
 ```
 
 Creating a green table:
 
 ```
-log.color([1, 2, 3], ‘green’).table().log();
+require(‘protolog’)();
+[1, 2, 3].log.color(‘green’).table().log();
 ```
+
 ### Available Colors <a name='colors'></a>
 
 Available colors are:
